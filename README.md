@@ -13,6 +13,7 @@ Blame [@mfiano](https://github.com/mfiano/) for the existence of this library. H
 * The queue is unbounded.
   * The queue's storage automatically expands (which reallocates the queue storage).
   * The queue's storage can be manually trimmed (which reallocates the queue storage).
+* The queue does not preserve FIFO order for elements with the same priority.
 * The queue is **not** thread-safe.
 * The queue is **not** reentrant.
 
