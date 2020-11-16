@@ -19,3 +19,24 @@
   :serial t
   :depends-on (#:alexandria #:damn-fast-priority-queue)
   :components ((:file "damn-fast-priority-queue-test")))
+
+(asdf:defsystem #:damn-fast-priority-queue/performance-test
+  :description "Figure out the fastest priority queue implementation yourself."
+  :author "Michał \"phoe\" Herda <phoe@disroot.org>"
+  :license  "MIT"
+  :version "0.0.1"
+  :serial t
+  :depends-on (#:alexandria
+               #:pettomato-indexed-priority-queue
+               #:priority-queue
+               #:queues.priority-queue
+               #:pileup
+               #:bodge-heap
+               #:cl-heap
+               #:heap
+               #:minheap
+               #:damn-fast-priority-queue)
+  :components ((:file "damn-fast-priority-queue-perftest"))
+  :perform (test-op (o c)
+                    (symbol-call "DAMN-FAST-PRIORITY-QUEUE/PERFORMANCE-TEST"
+                                 "RUN")))

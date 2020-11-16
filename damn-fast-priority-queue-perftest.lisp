@@ -1,16 +1,21 @@
 ;;;; damn-fast-priority-queue-perftest.lisp
 
+(defpackage #:damn-fast-priority-queue/performance-test
+  (:use #:cl)
+  (:local-nicknames (#:a #:alexandria))
+  (:export #:run))
+
+(in-package #:damn-fast-priority-queue/performance-test)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Test parameters
+
+(defconstant +capacity+ 409600)
+(defconstant +repeat-count+ 10)
+(defconstant +pass-capacity-p+ nil)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Performance test
-
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (ql:quickload '(:pettomato-indexed-priority-queue :priority-queue
-                  :queues.priority-queue :pileup :bodge-heap :cl-heap :heap
-                  :minheap :damn-fast-priority-queue)))
-
-(defconstant +capacity+ 4096)
-(defconstant +repeat-count+ 1000)
-(defconstant +pass-capacity-p+ nil)
 
 (defun perform-test (name vector-name vector
                      &key make-fn push-fn peek-fn pop-fn)
@@ -21,22 +26,30 @@
     (format t "~&;;; Element order: ~A~%~%" vector-name)
     (time (dotimes (i +repeat-count+)
             (map nil (lambda (i) (funcall push-fn queue i)) vector)
-            (dotimes (i +capacity+)
-              (assert (= i (the fixnum (funcall peek-fn queue))))
-              (assert (= i (the fixnum (funcall pop-fn queue)))))))))
+            (if (eq vector-name :zero)
+                (dotimes (i +capacity+)
+                  (assert (= 0 (the fixnum (funcall peek-fn queue))))
+                  (assert (= 0 (the fixnum (funcall pop-fn queue)))))
+                (dotimes (i +capacity+)
+                  (assert (= i (the fixnum (funcall peek-fn queue))))
+                  (assert (= i (the fixnum (funcall pop-fn queue))))))))))
 
 (defun make-test-vectors ()
   (declare (optimize speed))
-  (let ((increasing (make-array +capacity+
+  (let ((zero (make-array +capacity+
+                          :element-type `(integer 0 ,(1- +capacity+))
+                          :initial-element 0))
+        (increasing (make-array +capacity+
                                 :element-type `(integer 0 ,(1- +capacity+)))))
     (loop for i from 0 below +capacity+ do (setf (aref increasing i) i))
     (let ((decreasing (nreverse (copy-seq increasing)))
           (shuffled (a:shuffle (copy-seq increasing))))
-      `((:increasing ,increasing)
+      `((:zero ,zero)
+        (:increasing ,increasing)
         (:decreasing ,decreasing)
         (:shuffled ,shuffled)))))
 
-(defun performance-test ()
+(defun run ()
   (declare (optimize speed))
   (format t "~&;;; Starting a priority queue performance test.")
   (format t "~&;;; Testing with ~D elements and ~D repeats."
