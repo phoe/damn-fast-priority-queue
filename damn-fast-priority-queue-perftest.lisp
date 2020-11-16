@@ -12,7 +12,7 @@
 
 (defconstant +capacity+ 409600)
 (defconstant +repeat-count+ 10)
-(defconstant +pass-capacity-p+ nil)
+(defconstant +pass-capacity-p+ t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Performance test
@@ -44,10 +44,10 @@
     (loop for i from 0 below +capacity+ do (setf (aref increasing i) i))
     (let ((decreasing (nreverse (copy-seq increasing)))
           (shuffled (a:shuffle (copy-seq increasing))))
-      `((:zero ,zero)
-        (:increasing ,increasing)
+      `((:increasing ,increasing)
         (:decreasing ,decreasing)
-        (:shuffled ,shuffled)))))
+        (:shuffled ,shuffled)
+        (:zero ,zero)))))
 
 (defun run ()
   (declare (optimize speed))

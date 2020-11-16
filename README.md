@@ -67,10 +67,10 @@ The ASDF system `damn-fast-priority-queue/performance-test` contains a simple pe
   * Note: not all tested queue libraries support passing the initial capacity or extension factor as parameters when constructing the queue. Therefore, for some libraries, this parameter is a no-op.
 
 The performance test includes multiple priority queue/heap libraries available on Quicklisp, tested against four synthetic datasets:
-* an array of `n` zeroes,
 * an array of unique numbers from `0` to `n`, in increasing order,
 * an array of unique numbers from `0` to `n`, in decreasing order,
-* an array of unique numbers from `0` to `n`, in shuffled order.
+* an array of unique numbers from `0` to `n`, in shuffled order,
+* an array of `n` zeroes.
 
 All test functions are compiled with `(optimize speed)`.
 
