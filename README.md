@@ -74,13 +74,15 @@ The performance test includes multiple priority queue/heap libraries available o
 
 All test functions are compiled with `(optimize speed)`.
 
+`:real-damn-fast-priority-queue` is `:damn-fast-priority-queue` compiled with `:real-damn-fast-priority-queue` pushed into `*features*`.
+
 The listed timing does not include the time required to prepare the test vectors or to construct the priority queue object.
 
 Please feel free to question, verify, and improve the code and results of this benchmark.
 
 ### 409600 elements, 10 repeats, capacity passed
 
-| Library\Vector                    | :increasing | :decreasing | :shuffled |     :zero |
+| Library \ Vector                  | :increasing | :decreasing | :shuffled |     :zero |
 |-----------------------------------|-------------|-------------|-----------|-----------|
 | :pettomato-indexed-priority-queue |       4.323 |       5.943 |     6.463 |     0.687 |
 | :priority-queue                   |       6.335 |      10.195 |     7.251 |     0.911 |
@@ -91,10 +93,11 @@ Please feel free to question, verify, and improve the code and results of this b
 | :heap                             |       9.491 |      12.167 |     9.287 |     0.895 |
 | :minheap                          |       6.335 |       7.951 |     7.663 | **0.551** |
 | :damn-fast-priority-queue         |   **0.599** |   **0.719** | **0.819** |     0.631 |
+| :real-damn-fast-priority-queue    |   **0.543** |   **0.647** | **0.739** |     0.599 |
 
 ### 409600 elements, 10 repeats, capacity not passed
 
-| Library\Vector                    | :increasing | :decreasing | :shuffled |     :zero |
+| Library \ Vector                  | :increasing | :decreasing | :shuffled |     :zero |
 |-----------------------------------|-------------|-------------|-----------|-----------|
 | :pettomato-indexed-priority-queue |       4.759 |       5.963 |     7.311 |     0.671 |
 | :priority-queue                   |       6.339 |      10.067 |     7.427 |     0.915 |
@@ -105,10 +108,11 @@ Please feel free to question, verify, and improve the code and results of this b
 | :heap                             |       8.583 |      12.263 |     8.999 |     0.875 |
 | :minheap                          |       5.523 |       7.789 |    11.335 | **0.535** |
 | :damn-fast-priority-queue         |   **0.575** |   **0.727** | **0.931** |     0.627 |
+| :real-damn-fast-priority-queue    |   **0.575** |   **0.727** | **0.715** |     0.599 |
 
 ### 4096 elements, 1000 repeats, capacity passed
 
-| Library\Vector                    | :increasing | :decreasing | :shuffled |     :zero |
+| Library \ Vector                  | :increasing | :decreasing | :shuffled |     :zero |
 |-----------------------------------|-------------|-------------|-----------|-----------|
 | :pettomato-indexed-priority-queue |       2.567 |       3.599 |     2.887 |     0.675 |
 | :priority-queue                   |       3.863 |       5.995 |     4.359 |     0.863 |
@@ -119,10 +123,12 @@ Please feel free to question, verify, and improve the code and results of this b
 | :heap                             |       5.187 |       8.339 |     5.587 |     0.879 |
 | :minheap                          |       3.135 |       5.767 |     3.531 |     0.527 |
 | :damn-fast-priority-queue         |   **0.375** |   **0.455** | **0.471** | **0.267** |
+| :damn-fast-priority-queue         |   **0.327** |   **0.371** | **0.411** | **0.215** |
+
 
 ### 4096 elements, 1000 repeats, capacity not passed
 
-| Library\Vector                    | :increasing | :decreasing | :shuffled |     :zero |
+| Library \ Vector                  | :increasing | :decreasing | :shuffled |     :zero |
 |-----------------------------------|-------------|-------------|-----------|-----------|
 | :pettomato-indexed-priority-queue |       2.555 |       3.607 |     2.943 |     0.699 |
 | :priority-queue                   |       3.831 |       6.647 |     4.311 |     0.867 |
@@ -133,3 +139,4 @@ Please feel free to question, verify, and improve the code and results of this b
 | :heap                             |       5.243 |       7.539 |     5.619 |     0.915 |
 | :minheap                          |       3.215 |       4.487 |     3.471 |     0.547 |
 | :damn-fast-priority-queue         |   **0.379** |   **0.467** | **0.467** | **0.271** |
+| :real-damn-fast-priority-queue    |   **0.323** |   **0.387** | **0.415** | **0.215** |
