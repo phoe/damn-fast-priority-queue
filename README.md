@@ -6,13 +6,14 @@ Blame [@mfiano](https://github.com/mfiano/) for the existence of this library.
 
 ## Assumptions
 
-* The stored objects may be of arbitrary type.
-* Priorities of those objects must be of type `(unsigned-byte 32)`.
+* The queue enqueues objects along with their priorities.
+  * The stored objects may be of arbitrary type.
+  * The objects' priorities must be of type `(unsigned-byte 32)`.
 * The queue is a minimum queue (i.e. smallest priorities are dequeued first).
 * The queue is unbounded.
   * The queue's storage automatically expands (which reallocates the queue storage).
   * The queue's storage can be manually trimmed (which reallocates the queue storage).
-* The queue is **not*** thread-safe.
+* The queue is **not** thread-safe.
 * The queue is **not** reentrant.
 
 ## Implementation details
@@ -47,7 +48,7 @@ All exported functions are proclaimed `inline` by default.
 
 ## Tests
 
-* Non-verbose test: `(asdf:test-system :damn-fast-priority-queue)` 
+* Non-verbose test: `(asdf:test-system :damn-fast-priority-queue)` or `(asdf:load-system :damn-fast-priority-queue/test)` and then `(damn-fast-priority-queue/test:run)`
 * Verbose test: `(asdf:load-system :damn-fast-priority-queue/test)` and then `(damn-fast-priority-queue/test:run t)`
 
 ## License
