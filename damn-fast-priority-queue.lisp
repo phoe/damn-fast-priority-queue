@@ -48,12 +48,14 @@
 (declaim (ftype (function (&optional a:array-index extension-factor-type)
                           (values queue &optional))
                 make-queue))
-(defun make-queue (&optional (initial-size 256) (extension-factor 2))
+(defun make-queue (&optional (initial-storage-size 256) (extension-factor 2))
   (declare (type extension-factor-type extension-factor))
   (declare #.*optimize-qualities*)
   (%make :extension-factor extension-factor
-         :data-vector (make-array initial-size :element-type 'data-type)
-         :prio-vector (make-array initial-size :element-type 'prio-type)))
+         :data-vector (make-array initial-storage-size
+                                  :element-type 'data-type)
+         :prio-vector (make-array initial-storage-size
+                                  :element-type 'prio-type)))
 
 (defmethod print-object ((object queue) stream)
   (print-unreadable-object (object stream :type t :identity t)

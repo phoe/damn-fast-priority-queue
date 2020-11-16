@@ -24,7 +24,7 @@ MIT.
 ## Implementation details
 
 * The queue internally uses two simple vectors: one for data, specialized on `t`, and another for priorities, specialized on `(unsigned-byte 32)`.
-* The queue's storage has its initial size set to the extension factor.
+* The queue's storage has its initial storage size set to `256`. This value is customizable in the constructor.
 * Each time the queue runs out of storage, the storage is reallocated via `adjust-array` and its size is expanded by the `extension-factor` value provided at queue instantiation.
 * We assume that using simple vectors, calling `adjust-array` on them, and manually setting queue slots to the new vectors is faster than using adjustable vectors.
 
@@ -42,9 +42,9 @@ All exported functions are proclaimed `inline` by default.
 * **Classes**
   * `queue` - names the priority queue structure class.
 * **Functions**
-  * `(make-queue &optional extension-factor)` - make a priority queue with a given extension factor.
-    * The extension factor value must be a positive integer between `2` and `256`.
-    * The default extension factor is `2`.
+  * `(make-queue &optional initial-storage-size extension-factor)` - make a priority queue with a given extension factor.
+    * The initial storage size must be a non-negative integer. Its default value is `256`.
+    * The extension factor value must be a positive integer between `2` and `256`. Its default value is `2`.
   * `(enqueue queue object priority)` - enqueue an object.
   * `(dequeue queue)` - dequeue an object.
     * Secondary return value is true if the object was found and false if the queue was empty.
