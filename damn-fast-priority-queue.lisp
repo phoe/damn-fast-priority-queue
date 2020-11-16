@@ -89,11 +89,12 @@
     (a:once-only (position)
       `(let ((,length (array-total-size ,vector)))
          (when (>= ,position ,length)
-           (let ((,new-length (mod (* ,length ,extension-factor)
-                                   (ash 1 64))))
+           (let ((,new-length (max 1 (mod (* ,length ,extension-factor)
+                                          (ash 1 64)))))
              (declare (type a:array-length ,new-length))
              (when (<= ,new-length ,length)
-               (error "Integer overflow while resizing array"))
+               (error "Integer overflow while resizing array: new-length ~D is ~
+                       smaller than old length ~D" ,new-length ,length))
              (setf ,vector (adjust-array ,vector ,new-length))))
          (setf (aref ,vector ,position) ,new-element)))))
 
@@ -168,11 +169,11 @@
       (let ((data-vector (%data-vector queue))
             (prio-vector (%prio-vector queue)))
         (multiple-value-prog1 (values (aref data-vector 0) t)
-          (let ((old-data (aref data-vector (1- (%size queue))))
-                (old-prio (aref prio-vector (1- (%size queue)))))
+          (decf (%size queue))
+          (let ((old-data (aref data-vector (%size queue)))
+                (old-prio (aref prio-vector (%size queue))))
             (setf (aref data-vector 0) old-data
                   (aref prio-vector 0) old-prio))
-          (decf (%size queue))
           (heapify-downwards data-vector prio-vector (%size queue))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
