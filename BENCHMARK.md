@@ -21,7 +21,7 @@ The listed timing does not include the time required to prepare the test vectors
 The benchmark was performed on:
 * Intel(R) Core(TM) i7-4770K CPU @ 3.50GHz
 * 24GB DDR3 1333 MT/s RAM
-* debian sid
+* Debian sid amd64
 * SBCL 2.0.10, 1 GB heap.
 
 Please feel free to question, verify, and improve the code and results of this benchmark.
