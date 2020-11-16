@@ -29,31 +29,31 @@
 
 (deftype prio-vector-type () '(simple-array prio-type (*)))
 
-(deftype extension-size-type () '(and (integer 1) a:array-length))
+(deftype extension-factor-type () '(integer 2 256))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Structure definition
 
-(declaim (inline %make %data-vector %prio-vector %size %extension-size))
+(declaim (inline %make %data-vector %prio-vector %size %extension-factor))
 
 (defstruct (queue (:conc-name #:%) (:constructor %make)
                   (:predicate nil) (:copier nil))
   (data-vector (make-array 256 :element-type 'data-type) :type data-vector-type)
   (prio-vector (make-array 256 :element-type 'prio-type) :type prio-vector-type)
   (size 0 :type a:array-length)
-  (extension-size 256 :type extension-size-type))
+  (extension-factor 2 :type extension-factor-type))
 
 (declaim (inline make-queue))
 
-(declaim (ftype (function (&optional extension-size-type)
+(declaim (ftype (function (&optional a:array-index extension-factor-type)
                           (values queue &optional))
                 make-queue))
-(defun make-queue (&optional (extension-size 256))
-  (declare (type extension-size-type extension-size))
+(defun make-queue (&optional (initial-size 256) (extension-factor 2))
+  (declare (type extension-factor-type extension-factor))
   (declare #.*optimize-qualities*)
-  (%make :extension-size extension-size
-         :data-vector (make-array extension-size :element-type 'data-type)
-         :prio-vector (make-array extension-size :element-type 'prio-type)))
+  (%make :extension-factor extension-factor
+         :data-vector (make-array initial-size :element-type 'data-type)
+         :prio-vector (make-array initial-size :element-type 'prio-type)))
 
 (defmethod print-object ((object queue) stream)
   (print-unreadable-object (object stream :type t :identity t)
@@ -84,13 +84,16 @@
                       (aref data-vector child-index)))
             (t (return))))))
 
-(defmacro vector-push-replace (new-element position vector min-extension)
+(defmacro vector-push-replace (new-element position vector extension-factor)
   (a:with-gensyms (length new-length)
     (a:once-only (position)
       `(let ((,length (array-total-size ,vector)))
          (when (>= ,position ,length)
-           (let ((,new-length (+ ,length ,min-extension)))
+           (let ((,new-length (mod (* ,length ,extension-factor)
+                                   (ash 1 64))))
              (declare (type a:array-length ,new-length))
+             (when (<= ,new-length ,length)
+               (error "Integer overflow while resizing array"))
              (setf ,vector (adjust-array ,vector ,new-length))))
          (setf (aref ,vector ,position) ,new-element)))))
 
@@ -102,9 +105,9 @@
   (symbol-macrolet ((data-vector (%data-vector queue))
                     (prio-vector (%prio-vector queue)))
     (let ((size (%size queue))
-          (extension-size (%extension-size queue)))
-      (vector-push-replace object size data-vector extension-size)
-      (vector-push-replace priority size prio-vector extension-size)
+          (extension-factor (%extension-factor queue)))
+      (vector-push-replace object size data-vector extension-factor)
+      (vector-push-replace priority size prio-vector extension-factor)
       (heapify-upwards data-vector prio-vector (%size queue))
       (incf (%size queue))
       nil)))
