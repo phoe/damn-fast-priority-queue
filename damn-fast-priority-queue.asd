@@ -27,6 +27,7 @@
   :version "0.0.1"
   :serial t
   :depends-on (#:alexandria
+               #:trivial-garbage
                #:pettomato-indexed-priority-queue
                #:priority-queue
                #:queues.priority-queue

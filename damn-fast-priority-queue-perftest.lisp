@@ -24,6 +24,7 @@
   (let* ((queue (funcall make-fn)))
     (format t "~&;;; Library: ~A" name)
     (format t "~&;;; Element order: ~A~%~%" vector-name)
+    (trivial-garbage:gc :full t)
     (time (dotimes (i +repeat-count+)
             (map nil (lambda (i) (funcall push-fn queue i)) vector)
             (if (eq vector-name :zero)
