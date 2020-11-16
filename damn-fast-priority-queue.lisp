@@ -14,8 +14,7 @@
   (defparameter *optimize-qualities*
     #+really-damn-fast-priority-queues
     ;; Good luck.
-    `(optimize (speed 3) (debug 0) (safety 0)
-               (space 0) (compilation-speed 0))
+    `(optimize (speed 3) (debug 0) (safety 0) (space 0) (compilation-speed 0))
     #-really-damn-fast-priority-queues
     `(optimize (speed 3))))
 
@@ -32,6 +31,8 @@
 
 (deftype extension-size-type () '(and (integer 1) a:array-length))
 
+(declaim (inline %make %data-vector %prio-vector %size %extension-size))
+
 (defstruct (queue (:conc-name #:%) (:constructor %make)
                   (:predicate nil) (:copier nil))
   (data-vector (make-array 256 :element-type 'data-type) :type data-vector-type)
@@ -39,7 +40,7 @@
   (size 0 :type a:array-length)
   (extension-size 256 :type extension-size-type))
 
-(declaim (inline %make make-queue))
+(declaim (inline make-queue))
 
 (declaim (ftype (function (&optional extension-size-type)
                           (values queue &optional))
@@ -91,9 +92,9 @@
 
 (declaim (ftype (function (queue t fixnum) (values null &optional)) enqueue))
 (defun enqueue (queue object priority)
-  (declare #.*optimize-qualities*)
   (declare (type queue queue))
   (declare (type fixnum priority))
+  (declare #.*optimize-qualities*)
   (let ((data-vector (%data-vector queue))
         (prio-vector (%prio-vector queue))
         (size (%size queue))
@@ -145,8 +146,8 @@
 
 (declaim (ftype (function (queue) (values t boolean)) dequeue))
 (defun dequeue (queue)
-  (declare #.*optimize-qualities*)
   (declare (type queue queue))
+  (declare #.*optimize-qualities*)
   (if (= 0 (%size queue))
       (values nil nil)
       (let ((data-vector (%data-vector queue))
@@ -166,22 +167,22 @@
 
 (declaim (ftype (function (queue) (values t boolean)) peek))
 (defun peek (queue)
-  (declare #.*optimize-qualities*)
   (declare (type queue queue))
+  (declare #.*optimize-qualities*)
   (if (= 0 (%size queue))
       (values nil nil)
       (values (aref (%data-vector queue) 0) t)))
 
 (declaim (ftype (function (queue) (values a:array-length &optional)) size))
 (defun size (queue)
-  (declare #.*optimize-qualities*)
   (declare (type queue queue))
+  (declare #.*optimize-qualities*)
   (%size queue))
 
 (declaim (ftype (function (queue) (values null &optional)) trim))
 (defun trim (queue)
-  (declare #.*optimize-qualities*)
   (declare (type queue queue))
+  (declare #.*optimize-qualities*)
   (let ((size (%size queue)))
     (setf (%data-vector queue) (adjust-array (%data-vector queue) size)
           (%prio-vector queue) (adjust-array (%prio-vector queue) size))
