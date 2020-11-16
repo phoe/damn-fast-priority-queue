@@ -121,9 +121,6 @@
                           (values null &optional))
                 heapify-downwards))
 (defun heapify-downwards (data-vector prio-vector size)
-  ;; spychaj przestawiony wierzchołek w dół, zamieniając pozycjami z większymi
-  ;; z dzieci, aż do przywrócenia warunku kopca (czyli aż dzieci będą mniejsze
-  ;; od k lub element dotrze na spód kopca)
   (declare (type data-vector-type data-vector))
   (declare (type prio-vector-type prio-vector))
   (declare #.*optimize-qualities*)
