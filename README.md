@@ -47,7 +47,8 @@ All exported functions are proclaimed `inline` by default.
 
 ## Tests
 
-Not yet.
+* Non-verbose test: `(asdf:test-system :damn-fast-priority-queue)` 
+* Verbose test: `(asdf:load-system :damn-fast-priority-queue/test)` and then `(damn-fast-priority-queue/test:run t)`
 
 ## License
 
