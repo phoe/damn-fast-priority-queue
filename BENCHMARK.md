@@ -18,6 +18,8 @@ All test functions are compiled with `(optimize speed)`.
 
 The listed timing does not include the time required to prepare the test vectors or to construct the priority queue object.
 
+The benchmark was performed on debian sid, Intel(R) Core(TM) i7-4770K CPU @ 3.50GHz, 24GB RAM, SBCL 2.0.10, 1 GB heap.
+
 Please feel free to question, verify, and improve the code and results of this benchmark.
 
 ## 409600 elements, 10 repeats, capacity passed
