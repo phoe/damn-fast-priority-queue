@@ -1,10 +1,10 @@
 # Damn Fast Priority Queue
 
-A priority queue whose first and foremost priority is speed.
+A heap-based priority queue whose first and foremost priority is [**speed**](https://www.youtube.com/watch?v=AkagvXwDsYU).
 
-Blame [@mfiano](https://github.com/mfiano/) for the existence of this library.
+Blame [@mfiano](https://github.com/mfiano/) for the existence of this library. He's the one who wanted a priority queue that's going to run as fast as possible in one of the hottest loops of his game engine ~~and then figured out that hey, he actually doesn't need a prio queue there~~.
 
-## Assumptions
+## Description
 
 * The queue enqueues objects along with their priorities.
   * The stored objects may be of arbitrary type.
@@ -25,8 +25,10 @@ Blame [@mfiano](https://github.com/mfiano/) for the existence of this library.
 
 ## Optimization settings
 
+* The code uses structure classes in favor of standard classes.
+* The code uses standard, `inline`-proclaimed functions in favor of generic functions.
 * All functions are optimized for maximum `speed`.
-* By default, the code retains the default values of `debug`, `safety`, `space`, and `compilation-speed` optimize qualities. To set them all to 0, pray to your favorite deity and push `:really-damn-fast-priority-queues` into `*features*` before compiling the system.
+* By default, the code retains the default values of `debug`, `safety`, `space`, and `compilation-speed` optimize qualities. To set them all to 0, pray to your favorite deity and push `:real-damn-fast-priority-queue` into `*features*` before compiling the system.
 
 ## Exports
 

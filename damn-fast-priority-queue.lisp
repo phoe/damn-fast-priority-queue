@@ -12,14 +12,14 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defparameter *optimize-qualities*
-    #+really-damn-fast-priority-queues
+    #+real-damn-fast-priority-queue
     ;; Good luck.
     `(optimize (speed 3) (debug 0) (safety 0) (space 0) (compilation-speed 0))
-    #-really-damn-fast-priority-queues
+    #-real-damn-fast-priority-queue
     `(optimize (speed 3))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; Structure definition
+;;;; Type definitions
 
 (deftype data-type () 't)
 
@@ -30,6 +30,9 @@
 (deftype prio-vector-type () '(simple-array prio-type (*)))
 
 (deftype extension-size-type () '(and (integer 1) a:array-length))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Structure definition
 
 (declaim (inline %make %data-vector %prio-vector %size %extension-size))
 
