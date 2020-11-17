@@ -69,7 +69,7 @@ Please feel free to question, verify, and improve the code and results of this b
 | :heap                             |       5.187 |       8.339 |     5.587 |     0.879 |
 | :minheap                          |       3.135 |       5.767 |     3.531 |     0.527 |
 | :damn-fast-priority-queue         |   **0.375** |   **0.455** | **0.471** | **0.267** |
-| :damn-fast-priority-queue         |   **0.327** |   **0.371** | **0.411** | **0.215** |
+| :real-damn-fast-priority-queue    |   **0.327** |   **0.371** | **0.411** | **0.215** |
 
 ## 4096 elements, 1000 repeats, capacity not passed
 
