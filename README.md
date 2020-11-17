@@ -31,6 +31,7 @@ MIT.
 ## Implementation details
 
 * The queue internally uses two simple vectors: one for data, specialized on `t`, and another for priorities, specialized on `(unsigned-byte 32)`.
+  * The stable queue also uses a third simple vector for storing element insertion order, specialized on `(unsigned-byte 32)`.
 * The queue's storage has its initial storage size set to `256`. This value is customizable in the constructor.
 * Each time the queue runs out of storage, the storage is reallocated via `adjust-array` and its size is expanded by the `extension-factor` value provided at queue instantiation.
 * We assume that using simple vectors, calling `adjust-array` on them, and manually setting queue slots to the new vectors is faster than using adjustable vectors.
