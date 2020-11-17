@@ -1,8 +1,5 @@
 ;;;; damn-fast-stable-priority-queue-test-same.lisp
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; Test - same priorities
-
 (defpackage #:damn-fast-stable-priority-queue/test-same-priorities
   (:use #:cl)
   (:local-nicknames (#:a #:alexandria)

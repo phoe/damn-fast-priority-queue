@@ -1,8 +1,5 @@
 ;;;; damn-fast-stable-priority-queue-test-distinct.lisp
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; Test - distinct priorities
-
 (defpackage #:damn-fast-stable-priority-queue/test-distinct-priorities
   (:use #:cl)
   (:local-nicknames (#:a #:alexandria)
