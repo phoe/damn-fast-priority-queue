@@ -52,7 +52,7 @@ Please feel free to question, verify, and improve the code and results of this b
 | :heap                                 |       8.583 |      12.263 |     8.999 |     0.875 |
 | :minheap                              |       5.523 |       7.789 |    11.335 | **0.535** |
 | :damn-fast-priority-queue             |   **0.575** |   **0.727** | **0.931** |     0.627 |
-| :real-damn-fast-priority-queue        |   **0.575** |   **0.727** | **0.715** |     0.599 |
+| :real-damn-fast-priority-queue        |   **0.519** |   **0.623** | **0.715** |     0.599 |
 | :damn-fast-stable-priority-queue      |       0.635 |       0.803 |     1.007 |     0.795 |
 | :real-damn-fast-stable-priority-queue |       0.555 |       0.727 |     0.887 |     0.639 |
 

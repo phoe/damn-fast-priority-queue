@@ -10,12 +10,27 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Test parameters
 
-(defconstant +capacity+ 4096)
-(defconstant +repeat-count+ 1000)
-(defconstant +pass-capacity-p+ nil)
+(defconstant +capacity+ 409600)
+(defconstant +repeat-count+ 10)
+(defconstant +pass-capacity-p+ t)
+
+(defparameter *test-vectors*
+  '(:increasing :decreasing :shuffled :zero))
+
+(defparameter *test-functions*
+  (list #'test-pettomato-indexed-priority-queue
+        #'test-priority-queue
+        #'test-queues
+        #'test-pileup
+        #'test-bodge-heap
+        #'test-cl-heap
+        #'test-heap
+        #'test-minheap
+        #'test-damn-fast-priority-queue
+        #'test-damn-fast-stable-priority-queue))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; Performance test
+;;;; Performance testq
 
 (defun perform-test (name vector-name vector
                      &key make-fn push-fn peek-fn pop-fn)
@@ -45,10 +60,10 @@
     (loop for i from 0 below +capacity+ do (setf (aref increasing i) i))
     (let ((decreasing (nreverse (copy-seq increasing)))
           (shuffled (a:shuffle (copy-seq increasing))))
-      `((:increasing ,increasing)
-        (:decreasing ,decreasing)
-        (:shuffled ,shuffled)
-        (:zero ,zero)))))
+      `(,(when (member :increasing *test-vectors*) `(:increasing ,increasing))
+        ,(when (member :decreasing *test-vectors*) `(:decreasing ,decreasing))
+        ,(when (member :shuffled *test-vectors*) `(:shuffled ,shuffled))
+        ,(when (member :zero *test-vectors*) `(:zero ,zero))))))
 
 (defun run ()
   (declare (optimize speed))
@@ -57,19 +72,9 @@
           +capacity+ +repeat-count+)
   (format t "~&;;; ~:[Not p~;P~]assing capacity to constructors.~%~%"
           +pass-capacity-p+)
-  (let ((functions (list ;; #'test-pettomato-indexed-priority-queue
-                    ;; #'test-priority-queue
-                    ;; #'test-queues
-                    ;; #'test-pileup
-                    ;; #'test-bodge-heap
-                    ;; #'test-cl-heap
-                    ;; #'test-heap
-                    ;; #'test-minheap
-                    ;; #'test-damn-fast-priority-queue
-                    #'test-damn-fast-stable-priority-queue)))
-    (dolist (data (make-test-vectors))
-      (dolist (function functions)
-        (apply (the function function) data))))
+  (dolist (data (make-test-vectors))
+    (dolist (function *test-functions*)
+      (apply (the function function) data)))
   (format t "~&;;; Performance test complete.~%"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
