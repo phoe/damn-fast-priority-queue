@@ -1,18 +1,18 @@
-;;;; damn-fast-priority-queue-perftest.lisp
+;;;; benchmark.lisp
 
-(defpackage #:damn-fast-priority-queue/performance-test
+(defpackage #:priority-queue-benchmark
   (:use #:cl)
   (:local-nicknames (#:a #:alexandria))
   (:export #:run))
 
-(in-package #:damn-fast-priority-queue/performance-test)
+(in-package #:priority-queue-benchmark)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Test parameters
 
-(defconstant +capacity+ 409600)
-(defconstant +repeat-count+ 10)
-(defconstant +pass-capacity-p+ t)
+(defconstant +capacity+ 4096)
+(defconstant +repeat-count+ 1000)
+(defconstant +pass-capacity-p+ nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Performance test
@@ -57,15 +57,16 @@
           +capacity+ +repeat-count+)
   (format t "~&;;; ~:[Not p~;P~]assing capacity to constructors.~%~%"
           +pass-capacity-p+)
-  (let ((functions (list #'test-pettomato-indexed-priority-queue
-                         #'test-priority-queue
-                         #'test-queues
-                         #'test-pileup
-                         #'test-bodge-heap
-                         #'test-cl-heap
-                         #'test-heap
-                         #'test-minheap
-                         #'test-damn-fast-priority-queue)))
+  (let ((functions (list ;; #'test-pettomato-indexed-priority-queue
+                    ;; #'test-priority-queue
+                    ;; #'test-queues
+                    ;; #'test-pileup
+                    ;; #'test-bodge-heap
+                    ;; #'test-cl-heap
+                    ;; #'test-heap
+                    ;; #'test-minheap
+                    ;; #'test-damn-fast-priority-queue
+                    #'test-damn-fast-stable-priority-queue)))
     (dolist (data (make-test-vectors))
       (dolist (function functions)
         (apply (the function function) data))))
@@ -186,3 +187,16 @@
    :push-fn (lambda (q i) (damn-fast-priority-queue:enqueue q i i))
    :peek-fn (lambda (q) (damn-fast-priority-queue:peek q))
    :pop-fn (lambda (q) (damn-fast-priority-queue:dequeue q))))
+
+(defun test-damn-fast-stable-priority-queue (vector-name vector)
+  (declare (optimize speed))
+  (perform-test
+   :damn-fast-stable-priority-queue
+   vector-name vector
+   :make-fn (lambda ()
+              (if +pass-capacity-p+
+                  (damn-fast-stable-priority-queue:make-queue +capacity+)
+                  (damn-fast-stable-priority-queue:make-queue)))
+   :push-fn (lambda (q i) (damn-fast-stable-priority-queue:enqueue q i i))
+   :peek-fn (lambda (q) (damn-fast-stable-priority-queue:peek q))
+   :pop-fn (lambda (q) (damn-fast-stable-priority-queue:dequeue q))))

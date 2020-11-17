@@ -1,12 +1,20 @@
 # Damn Fast Priority Queue
 
-A heap-based priority queue whose first and foremost priority is [**speed**](https://www.youtube.com/watch?v=AkagvXwDsYU).
+A heap-based priority queue whose first and foremost priority is [**speed**](https://www.youtube.com/watch?v=AkagvXwDsYU). Optionally comes in a stable flavor.
 
 Blame [@mfiano](https://github.com/mfiano/) for the existence of this library. He's the one who wanted a priority queue that's going to run as fast as possible in one of the hottest loops of his game engine ~~and then figured out that hey, he actually doesn't need a prio queue there~~.
 
 ## License
 
 MIT.
+
+## Systems
+
+* This repository contains two systems:
+  * `damn-fast-priority-queue`, a faster but unstable priority queue (elements with the same priority are dequeued in unspecified order),
+  * `damn-fast-stable-priority-queue`, a fast and stable priority queue (elements with the same priority are dequeued in FIFO order).
+* The queues have identical APIs.
+  * These APIs are not generic, i.e. operators for one queue type must not be used on a queue instance of the other type.
 
 ## Description
 
@@ -17,7 +25,6 @@ MIT.
 * The queue is unbounded.
   * The queue's storage automatically expands (which reallocates the queue storage).
   * The queue's storage can be manually trimmed (which reallocates the queue storage).
-* The queue does not preserve FIFO order for elements with the same priority.
 * The queue is **not** thread-safe.
 * The queue is **not** reentrant.
 
@@ -33,7 +40,9 @@ MIT.
 * The code uses structure classes in favor of standard classes.
 * The code uses standard, `inline`-proclaimed functions in favor of generic functions.
 * All functions are optimized for maximum `speed`.
-* By default, the code retains the default values of `debug`, `safety`, `space`, and `compilation-speed` optimize qualities. To set them all to 0, pray to your favorite deity and push `:real-damn-fast-priority-queue` into `*features*` before compiling the system.
+* By default, the code retains the default values of `debug`, `safety`, `space`, and `compilation-speed` optimize qualities. To set them all to 0, pray to your favorite deity and push a feature into `*features*` before compiling the respective system.
+  * for `damn-fast-priority-queue`, push `:real-damn-fast-priority-queue`,
+  * for `damn-fast-stable-priority-queue`, push `:real-damn-fast-stable-priority-queue`.
 
 ## Exports
 
@@ -55,9 +64,13 @@ All exported functions are proclaimed `inline` by default.
 
 ## Tests
 
-* Non-verbose test: `(asdf:test-system :damn-fast-priority-queue)` or `(asdf:load-system :damn-fast-priority-queue/test) (damn-fast-priority-queue/test:run)`
-* Verbose test: `(asdf:load-system :damn-fast-priority-queue/test) (damn-fast-priority-queue/test:run t)`
+* For `damn-fast-priority-queue`:
+  * Non-verbose test: `(asdf:test-system :damn-fast-priority-queue)`
+  * Verbose test: `(damn-fast-priority-queue/test:run t)`
+* For `damn-fast-stable-priority-queue`:
+  * Non-verbose test: `(asdf:test-system :damn-fast-stable-priority-queue)`
+  * Verbose test: `(damn-fast-stable-priority-queue/test:run t)`
 
 ## Performance tests
 
-See [BENCHMARK.md](BENCHMARK.md).
+See [the Priority Queue Benchmark README](benchmark/README.md).
