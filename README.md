@@ -74,4 +74,4 @@ All exported functions are proclaimed `inline` by default.
 
 ## Performance tests
 
-See [the Priority Queue Benchmark README](benchmark/README.md).
+See [the Priority Queue Benchmark README](priority-queue-benchmark/README.md).
