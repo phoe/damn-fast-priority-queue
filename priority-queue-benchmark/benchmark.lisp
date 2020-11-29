@@ -18,16 +18,16 @@
   '(:increasing :decreasing :shuffled :zero))
 
 (defparameter *test-functions*
-  (list #'test-pettomato-indexed-priority-queue
-        #'test-priority-queue
-        #'test-queues
-        #'test-pileup
-        #'test-bodge-heap
-        #'test-cl-heap
-        #'test-heap
-        #'test-minheap
-        #'test-damn-fast-priority-queue
-        #'test-damn-fast-stable-priority-queue))
+  (list 'test-pettomato-indexed-priority-queue
+        'test-priority-queue
+        'test-queues
+        'test-pileup
+        'test-bodge-heap
+        'test-cl-heap
+        'test-heap
+        'test-minheap
+        'test-damn-fast-priority-queue
+        'test-damn-fast-stable-priority-queue))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Performance testq
