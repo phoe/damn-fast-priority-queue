@@ -2,11 +2,12 @@
 
 (defpackage #:damn-fast-priority-queue
   (:use #:cl)
+  (:shadow #:map)
   (:local-nicknames (#:a #:alexandria))
   (:export #:queue #:make-queue #:enqueue #:dequeue #:peek #:size #:trim
+           #:map #:do-queue
            #:queue-size-limit-reached
-           #:queue-size-limit-reached-queue
-           #:queue-size-limit-reached-object))
+           #:queue-size-limit-reached-queue #:queue-size-limit-reached-object))
 
 (in-package #:damn-fast-priority-queue)
 
@@ -33,23 +34,6 @@
 (deftype prio-vector-type () '(simple-array prio-type (*)))
 
 (deftype extension-factor-type () '(integer 2 256))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; Conditions
-
-(defun report-queue-size-limit-reached (condition stream)
-  (let ((queue (queue-size-limit-reached-queue condition))
-        (element (queue-size-limit-reached-object condition)))
-    (format stream "Size limit (~D) reached for non-extensible ~
-                    queue ~S while trying to enqueue element ~S onto it."
-            (length (%data-vector queue)) queue element)))
-
-(define-condition queue-size-limit-reached (error)
-  ((%queue :reader queue-size-limit-reached-queue :initarg :queue)
-   (%object :reader queue-size-limit-reached-object :initarg :element))
-  (:default-initargs :queue (a:required-argument :queue)
-                     :object (a:required-argument :object))
-  (:report report-queue-size-limit-reached))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Structure definition
@@ -229,3 +213,35 @@
     (setf (%data-vector queue) (adjust-array (%data-vector queue) size)
           (%prio-vector queue) (adjust-array (%prio-vector queue) size))
     nil))
+
+(declaim (ftype (function (queue (function (t) t)) (values null &optional))
+                map))
+(defun map (queue function)
+  (loop repeat (%size queue)
+        for data across (%data-vector queue)
+        do (funcall function data)))
+
+(defmacro do-queue ((object queue &optional result) &body body)
+  (multiple-value-bind (forms declarations) (a:parse-body body)
+    (a:once-only (queue)
+      `(loop repeat (%size ,queue)
+             for ,object across (%data-vector ,queue)
+             do (locally ,@declarations (tagbody ,@forms))
+             finally (return ,result)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Conditions
+
+(defun report-queue-size-limit-reached (condition stream)
+  (let ((queue (queue-size-limit-reached-queue condition))
+        (element (queue-size-limit-reached-object condition)))
+    (format stream "Size limit (~D) reached for non-extensible ~
+                    queue ~S while trying to enqueue element ~S onto it."
+            (length (%data-vector queue)) queue element)))
+
+(define-condition queue-size-limit-reached (error)
+  ((%queue :reader queue-size-limit-reached-queue :initarg :queue)
+   (%object :reader queue-size-limit-reached-object :initarg :element))
+  (:default-initargs :queue (a:required-argument :queue)
+                     :object (a:required-argument :object))
+  (:report report-queue-size-limit-reached))

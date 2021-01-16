@@ -43,6 +43,8 @@
 (defun perform-test (queue list)
   (when *verbose* (princ "."))
   (test-enqueue queue list)
+  (test-map queue list)
+  (test-do-queue queue list)
   (test-dequeue-and-peek queue list)
   (test-dequeue-and-peek-empty queue)
   (test-trim queue list)
@@ -58,6 +60,18 @@
       (assert (= (incf counter) (q:size queue)))
       (verify-heap-property (subseq (q::%count-vector queue)
                                     0 (q:size queue))))))
+
+(defun test-map (queue list)
+  (let ((expected (reduce #'+ list))
+        (actual 0))
+    (q:map queue (lambda (x) (incf actual (parse-integer x))))
+    (assert (= expected actual))))
+
+(defun test-do-queue (queue list)
+  (let ((expected (reduce #'+ list))
+        (actual 0))
+    (q:do-queue (x queue) (incf actual (parse-integer x)))
+    (assert (= expected actual))))
 
 (defun test-dequeue (queue expected-value expected-foundp)
   (multiple-value-bind (value foundp) (q:dequeue queue)
