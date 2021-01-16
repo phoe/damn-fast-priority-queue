@@ -3,7 +3,10 @@
 (defpackage #:damn-fast-priority-queue
   (:use #:cl)
   (:local-nicknames (#:a #:alexandria))
-  (:export #:queue #:make-queue #:enqueue #:dequeue #:peek #:size #:trim))
+  (:export #:queue #:make-queue #:enqueue #:dequeue #:peek #:size #:trim
+           #:queue-size-limit-reached
+           #:queue-size-limit-reached-queue
+           #:queue-size-limit-reached-object))
 
 (in-package #:damn-fast-priority-queue)
 
@@ -32,6 +35,23 @@
 (deftype extension-factor-type () '(integer 2 256))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Conditions
+
+(defun report-queue-size-limit-reached (condition stream)
+  (let ((queue (queue-size-limit-reached-queue condition))
+        (element (queue-size-limit-reached-object condition)))
+    (format stream "Size limit (~D) reached for non-extensible ~
+                    queue ~S while trying to enqueue element ~S onto it."
+            (length (%data-vector queue)) queue element)))
+
+(define-condition queue-size-limit-reached (error)
+  ((%queue :reader queue-size-limit-reached-queue :initarg :queue)
+   (%object :reader queue-size-limit-reached-object :initarg :element))
+  (:default-initargs :queue (a:required-argument :queue)
+                     :object (a:required-argument :object))
+  (:report report-queue-size-limit-reached))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Structure definition
 
 (declaim (inline %make %data-vector %prio-vector %size %extension-factor))
@@ -41,21 +61,27 @@
   (data-vector (make-array 256 :element-type 'data-type) :type data-vector-type)
   (prio-vector (make-array 256 :element-type 'prio-type) :type prio-vector-type)
   (size 0 :type a:array-length)
-  (extension-factor 2 :type extension-factor-type))
+  (extension-factor 2 :type extension-factor-type)
+  (extend-queue-p t :type boolean))
 
 (declaim (inline make-queue))
 
-(declaim (ftype (function (&optional a:array-index extension-factor-type)
-                          (values queue &optional))
+(declaim (ftype (function
+                 (&optional a:array-index extension-factor-type boolean)
+                 (values queue &optional))
                 make-queue))
-(defun make-queue (&optional (initial-storage-size 256) (extension-factor 2))
+(defun make-queue (&optional
+                     (initial-storage-size 256)
+                     (extension-factor 2)
+                     (extend-queue-p t))
   (declare (type extension-factor-type extension-factor))
   (declare #.*optimize-qualities*)
   (%make :extension-factor extension-factor
          :data-vector (make-array initial-storage-size
                                   :element-type 'data-type)
          :prio-vector (make-array initial-storage-size
-                                  :element-type 'prio-type)))
+                                  :element-type 'prio-type)
+         :extend-queue-p extend-queue-p))
 
 (defmethod print-object ((object queue) stream)
   (print-unreadable-object (object stream :type t :identity t)
@@ -86,20 +112,6 @@
                       (aref data-vector child-index)))
             (t (return))))))
 
-(defmacro vector-push-replace (new-element position vector extension-factor)
-  (a:with-gensyms (length new-length)
-    (a:once-only (position)
-      `(let ((,length (array-total-size ,vector)))
-         (when (>= ,position ,length)
-           (let ((,new-length (max 1 (mod (* ,length ,extension-factor)
-                                          (ash 1 64)))))
-             (declare (type a:array-length ,new-length))
-             (when (<= ,new-length ,length)
-               (error "Integer overflow while resizing array: new-length ~D is ~
-                       smaller than old length ~D" ,new-length ,length))
-             (setf ,vector (adjust-array ,vector ,new-length))))
-         (setf (aref ,vector ,position) ,new-element)))))
-
 (declaim (ftype (function (queue t fixnum) (values null &optional)) enqueue))
 (defun enqueue (queue object priority)
   (declare (type queue queue))
@@ -108,9 +120,21 @@
   (symbol-macrolet ((data-vector (%data-vector queue))
                     (prio-vector (%prio-vector queue)))
     (let ((size (%size queue))
-          (extension-factor (%extension-factor queue)))
-      (vector-push-replace object size data-vector extension-factor)
-      (vector-push-replace priority size prio-vector extension-factor)
+          (extension-factor (%extension-factor queue))
+          (length (array-total-size data-vector)))
+      (when (>= size length)
+        (unless (%extend-queue-p queue)
+          (error 'queue-size-limit-reached :queue queue :element object))
+        (let ((new-length (max 1 (mod (* length extension-factor)
+                                      (ash 1 64)))))
+          (declare (type a:array-length new-length))
+          (when (<= new-length length)
+            (error "Integer overflow while resizing array: new-length ~D is ~
+                    smaller than old length ~D" new-length length))
+          (setf data-vector (adjust-array data-vector new-length)
+                prio-vector (adjust-array prio-vector new-length))))
+      (setf (aref data-vector size) object
+            (aref prio-vector size) priority)
       (heapify-upwards data-vector prio-vector (%size queue))
       (incf (%size queue))
       nil)))

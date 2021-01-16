@@ -22,9 +22,10 @@ MIT.
   * The stored objects may be of arbitrary type.
   * The objects' priorities must be of type `(unsigned-byte 32)`.
 * The queue is a minimum queue (i.e. smallest priorities are dequeued first).
-* The queue is unbounded.
+* The queue is unbounded by default.
   * The queue's storage automatically expands (which reallocates the queue storage).
   * The queue's storage can be manually trimmed (which reallocates the queue storage).
+  * The queue can instead be configured to signal an error upon reaching its size limit.
 * The queue is **not** thread-safe.
 * The queue is **not** reentrant.
 
@@ -52,9 +53,10 @@ All exported functions are proclaimed `inline` by default.
 * **Classes**
   * `queue` - names the priority queue structure class.
 * **Functions**
-  * `(make-queue &optional initial-storage-size extension-factor)` - make a priority queue with a given extension factor.
+  * `(make-queue &optional initial-storage-size extension-factor extend-queue-p)` - make a priority queue.
     * The initial storage size must be a non-negative integer. Its default value is `256`.
     * The extension factor value must be a positive integer between `2` and `256`. Its default value is `2`.
+    * The queue can be configured to signal an error of type `queue-size-limit-reached` when its size is reached, instead of extending its storage. It is possible to retrieve the queue via the `queue-size-limit-reached-queue` reader and the object that was attempted to be stored via `queue-size-limit-reached-object`.
   * `(enqueue queue object priority)` - enqueue an object.
   * `(dequeue queue)` - dequeue an object.
     * Secondary return value is true if the object was found and false if the queue was empty.

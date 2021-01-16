@@ -38,7 +38,8 @@
       (perform-test queue (a:iota length))
       (perform-test queue (nreverse (a:iota length)))
       (dotimes (i 100)
-        (perform-test queue (a:shuffle (a:iota length)))))))
+        (perform-test queue (a:shuffle (a:iota length))))))
+  (perform-error-test))
 
 (defun perform-test (queue list)
   (when *verbose* (princ "."))
@@ -46,6 +47,19 @@
   (test-dequeue-and-peek queue list)
   (test-dequeue-and-peek-empty queue)
   (test-trim queue list))
+
+(defun perform-error-test ()
+  (let ((queue (q:make-queue 4 2 nil)))
+    (dotimes (i 4) (q:enqueue queue (princ-to-string i) i))
+    (flet ((perform ()
+             (multiple-value-bind (value error)
+                 (ignore-errors (q:enqueue queue "4" 4))
+               (assert (null value))
+               (assert (typep error 'q:queue-size-limit-reached))
+               (assert (eq queue (q:queue-size-limit-reached-queue error)))
+               (assert (string= "4"
+                                (q:queue-size-limit-reached-object error))))))
+      (dotimes (i 4) (perform)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Subtests
