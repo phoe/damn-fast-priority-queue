@@ -4,7 +4,8 @@
   (:use #:cl)
   (:shadow #:map)
   (:local-nicknames (#:a #:alexandria))
-  (:export #:queue #:make-queue #:enqueue #:dequeue #:peek #:size #:trim #:map
+  (:export #:queue #:make-queue #:enqueue #:dequeue #:peek #:size #:trim
+           #:map #:do-queue
            #:queue-size-limit-reached
            #:queue-size-limit-reached-queue
            #:queue-size-limit-reached-object))
@@ -287,3 +288,11 @@
   (loop repeat (%size queue)
         for data across (%data-vector queue)
         do (funcall function data)))
+
+(defmacro do-queue ((object queue &optional result) &body body)
+  (multiple-value-bind (forms declarations) (a:parse-body body)
+    (a:once-only (queue)
+      `(loop repeat (%size ,queue)
+             for ,object across (%data-vector ,queue)
+             do (locally ,@declarations (tagbody ,@forms))
+             finally (return ,result)))))

@@ -45,6 +45,7 @@
   (when *verbose* (princ "."))
   (test-enqueue queue list)
   (test-map queue list)
+  (test-do-queue queue list)
   (test-dequeue-and-peek queue list)
   (test-dequeue-and-peek-empty queue)
   (test-trim queue list))
@@ -77,6 +78,12 @@
   (let ((expected (reduce #'+ list))
         (actual 0))
     (q:map queue (lambda (x) (incf actual (parse-integer x))))
+    (assert (= expected actual))))
+
+(defun test-do-queue (queue list)
+  (let ((expected (reduce #'+ list))
+        (actual 0))
+    (q:do-queue (x queue) (incf actual (parse-integer x)))
     (assert (= expected actual))))
 
 (defun test-dequeue (queue expected-value expected-foundp)
