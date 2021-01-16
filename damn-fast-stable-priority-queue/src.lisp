@@ -2,8 +2,9 @@
 
 (defpackage #:damn-fast-stable-priority-queue
   (:use #:cl)
+  (:shadow #:map)
   (:local-nicknames (#:a #:alexandria))
-  (:export #:queue #:make-queue #:enqueue #:dequeue #:peek #:size #:trim
+  (:export #:queue #:make-queue #:enqueue #:dequeue #:peek #:size #:trim #:map
            #:queue-size-limit-reached
            #:queue-size-limit-reached-queue
            #:queue-size-limit-reached-object))
@@ -279,3 +280,10 @@
           (%prio-vector queue) (adjust-array (%prio-vector queue) size)
           (%count-vector queue) (adjust-array (%count-vector queue) size))
     nil))
+
+(declaim (ftype (function (queue (function (t) t)) (values null &optional))
+                map))
+(defun map (queue function)
+  (loop repeat (%size queue)
+        for data across (%data-vector queue)
+        do (funcall function data)))
