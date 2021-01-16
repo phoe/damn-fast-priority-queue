@@ -4,8 +4,8 @@
   (:use #:cl)
   (:shadow #:map)
   (:local-nicknames (#:a #:alexandria))
-  (:export #:queue #:make-queue #:enqueue #:dequeue #:peek #:size #:trim
-           #:map #:do-queue
+  (:export #:queue #:make-queue #:copy-queue
+           #:enqueue #:dequeue #:peek #:size #:trim #:map #:do-queue
            #:queue-size-limit-reached
            #:queue-size-limit-reached-queue #:queue-size-limit-reached-object))
 
@@ -48,7 +48,7 @@
   (extension-factor 2 :type extension-factor-type)
   (extend-queue-p t :type boolean))
 
-(declaim (inline make-queue))
+(declaim (inline make-queue copy-queue))
 
 (declaim (ftype (function
                  (&optional a:array-index extension-factor-type boolean)
@@ -70,6 +70,16 @@
 (defmethod print-object ((object queue) stream)
   (print-unreadable-object (object stream :type t :identity t)
     (format stream "(~D)" (%size object))))
+
+(declaim (ftype (function (queue) (values queue &optional)) copy-queue))
+(defun copy-queue (queue)
+  (declare (type queue queue))
+  (declare #.*optimize-qualities*)
+  (%make :extension-factor (%extension-factor queue)
+         :size (%size queue)
+         :extend-queue-p (%extend-queue-p queue)
+         :data-vector (copy-seq (%data-vector queue))
+         :prio-vector (copy-seq (%prio-vector queue))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Enqueueing
@@ -189,7 +199,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Introspection and maintenance
 
-(declaim (inline peek size trim))
+(declaim (inline peek size trim map))
 
 (declaim (ftype (function (queue) (values t boolean &optional)) peek))
 (defun peek (queue)

@@ -39,7 +39,8 @@
       (perform-test queue (nreverse (a:iota length)))
       (dotimes (i 100)
         (perform-test queue (a:shuffle (a:iota length))))))
-  (perform-error-test))
+  (perform-error-test)
+  (perform-copy-test))
 
 (defun perform-test (queue list)
   (when *verbose* (princ "."))
@@ -62,6 +63,29 @@
                (assert (string= "4"
                                 (q:queue-size-limit-reached-object error))))))
       (dotimes (i 4) (perform)))))
+
+(defun perform-copy-test ()
+  (let ((queue-1 (q:make-queue)))
+    (q:enqueue queue-1 42 1)
+    (let ((queue-2 (q:copy-queue queue-1)))
+      (q:enqueue queue-2 24 0)
+      ;; Check QUEUE-1
+      (multiple-value-bind (value foundp) (q:dequeue queue-1)
+        (assert (= 42 value))
+        (assert (eq t foundp)))
+      (multiple-value-bind (value foundp) (q:dequeue queue-1)
+        (assert (null value))
+        (assert (null foundp)))
+      ;; Check QUEUE-2
+      (multiple-value-bind (value foundp) (q:dequeue queue-2)
+        (assert (= 24 value))
+        (assert (eq t foundp)))
+      (multiple-value-bind (value foundp) (q:dequeue queue-2)
+        (assert (= 42 value))
+        (assert (eq t foundp)))
+      (multiple-value-bind (value foundp) (q:dequeue queue-2)
+        (assert (null value))
+        (assert (null foundp))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Subtests
