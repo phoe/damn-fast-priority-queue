@@ -41,23 +41,6 @@
 (deftype extension-factor-type () '(integer 2 256))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; Conditions
-
-(defun report-queue-size-limit-reached (condition stream)
-  (let ((queue (queue-size-limit-reached-queue condition))
-        (element (queue-size-limit-reached-object condition)))
-    (format stream "Size limit (~D) reached for non-extensible ~
-                    queue ~S while trying to enqueue element ~S onto it."
-            (length (%data-vector queue)) queue element)))
-
-(define-condition queue-size-limit-reached (error)
-  ((%queue :reader queue-size-limit-reached-queue :initarg :queue)
-   (%object :reader queue-size-limit-reached-object :initarg :element))
-  (:default-initargs :queue (a:required-argument :queue)
-                     :object (a:required-argument :object))
-  (:report report-queue-size-limit-reached))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Structure definition
 
 (declaim (inline %make %data-vector %prio-vector %count-vector %count %size
@@ -296,3 +279,20 @@
              for ,object across (%data-vector ,queue)
              do (locally ,@declarations (tagbody ,@forms))
              finally (return ,result)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Conditions
+
+(defun report-queue-size-limit-reached (condition stream)
+  (let ((queue (queue-size-limit-reached-queue condition))
+        (element (queue-size-limit-reached-object condition)))
+    (format stream "Size limit (~D) reached for non-extensible ~
+                    queue ~S while trying to enqueue element ~S onto it."
+            (length (%data-vector queue)) queue element)))
+
+(define-condition queue-size-limit-reached (error)
+  ((%queue :reader queue-size-limit-reached-queue :initarg :queue)
+   (%object :reader queue-size-limit-reached-object :initarg :element))
+  (:default-initargs :queue (a:required-argument :queue)
+                     :object (a:required-argument :object))
+  (:report report-queue-size-limit-reached))
