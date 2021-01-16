@@ -57,6 +57,7 @@ All exported functions are proclaimed `inline` by default.
     * The initial storage size must be a non-negative integer. Its default value is `256`.
     * The extension factor value must be a positive integer between `2` and `256`. Its default value is `2`.
     * The queue can be configured to signal an error of type `queue-size-limit-reached` when its size is reached, instead of extending its storage. It is possible to retrieve the queue via the `queue-size-limit-reached-queue` reader and the object that was attempted to be stored via `queue-size-limit-reached-object`.
+  * `(copy-queue queue)` - makes a deep copy of the provided queue (including its storage vectors).
   * `(enqueue queue object priority)` - enqueue an object.
   * `(dequeue queue)` - dequeue an object.
     * Secondary return value is true if the object was found and false if the queue was empty.
