@@ -64,8 +64,8 @@ All exported functions are proclaimed `inline` by default.
     * Secondary return value is true if the object was found and false if the queue was empty.
   * `(size queue)` - get the current element count of the queue.
   * `(trim queue)` - trim the queue's storage by calling `adjust-array` on it with the current queue size.
-  * `(map queue function)` - calls the function on each element of the queue in unspecified order and returns `nil`.
-  * `(do-queue (object queue &optional result) &body body)` - evaluates `body` with `object` bound to successive elements of `queue` and returns `result`.
+  * `(map queue function)` - calls the function on each element of `queue` in unspecified order and returns `nil`.
+  * `(do-queue (object queue &optional result) &body body)` - evaluates `body` with `object` bound to each element of `queue` in unspecified order and returns `result`.
 
 ## Tests
 
