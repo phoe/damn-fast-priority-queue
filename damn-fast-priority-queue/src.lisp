@@ -227,17 +227,17 @@
 (declaim (ftype (function (queue (function (t) t)) (values null &optional))
                 map))
 (defun map (queue function)
-  (loop repeat (%size queue)
-        for data across (%data-vector queue)
-        do (funcall function data)))
+  (dotimes (i (%size queue))
+    (funcall function (aref (%data-vector queue) i))))
 
 (defmacro do-queue ((object queue &optional result) &body body)
   (multiple-value-bind (forms declarations) (a:parse-body body)
-    (a:once-only (queue)
-      `(loop repeat (%size ,queue)
-             for ,object across (%data-vector ,queue)
-             do (locally ,@declarations (tagbody ,@forms))
-             finally (return ,result)))))
+    (a:with-gensyms (i)
+      (a:once-only (queue)
+        `(dotimes (,i (%size ,queue) ,result)
+           (let ((,object (aref (%data-vector ,queue) ,i)))
+             ,@declarations
+             (tagbody ,@forms)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Conditions
