@@ -106,10 +106,10 @@
                       (aref data-vector child-index)))
             (t (return))))))
 
-(declaim (ftype (function (queue t fixnum) (values null &optional)) enqueue))
+(declaim (ftype (function (queue t prio-type) (values null &optional)) enqueue))
 (defun enqueue (queue object priority)
   (declare (type queue queue))
-  (declare (type fixnum priority))
+  (declare (type prio-type priority))
   (declare #.*optimize-qualities*)
   (symbol-macrolet ((data-vector (%data-vector queue))
                     (prio-vector (%prio-vector queue)))
