@@ -26,8 +26,9 @@
         'test-cl-heap
         'test-heap
         'test-minheap
-        'test-damn-fast-priority-queue
-        'test-damn-fast-stable-priority-queue))
+        #'test-damn-fast-priority-queue
+        #'test-damn-fast-updatable-priority-queue
+        #'test-damn-fast-stable-priority-queue))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Performance testq
@@ -192,6 +193,18 @@
    :push-fn (lambda (q i) (damn-fast-priority-queue:enqueue q i i))
    :peek-fn (lambda (q) (damn-fast-priority-queue:peek q))
    :pop-fn (lambda (q) (damn-fast-priority-queue:dequeue q))))
+
+(defun test-damn-fast-updatable-priority-queue (vector-name vector)
+  (declare (optimize speed))
+  (perform-test
+   :damn-fast-updatable-priority-queue
+   vector-name vector
+   :make-fn (lambda () (if +pass-capacity-p+
+                           (damn-fast-updatable-priority-queue:make-queue +capacity+)
+                           (damn-fast-updatable-priority-queue:make-queue)))
+   :push-fn (lambda (q i) (damn-fast-updatable-priority-queue:enqueue q i i))
+   :peek-fn (lambda (q) (damn-fast-updatable-priority-queue:peek q))
+   :pop-fn (lambda (q) (damn-fast-updatable-priority-queue:dequeue q))))
 
 (defun test-damn-fast-stable-priority-queue (vector-name vector)
   (declare (optimize speed))
