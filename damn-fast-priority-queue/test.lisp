@@ -12,15 +12,16 @@
 ;;;; Utilities
 
 (defun verify-heap-property (vector)
+  (declare (type q::prio-vector-type vector))
   (loop with length = (length vector)
         for parent from 0 below (truncate length 2)
         for left = (+ (* parent 2) 1)
         for right = (+ (* parent 2) 2)
-        do (assert (< (aref vector parent) (aref vector left)) ()
+        do (assert (<= (aref vector parent) (aref vector left)) ()
                    "VERIFY-HEAP-PROPERTY: Invalid left child: ~D -> ~D"
                    (aref vector parent) (aref vector left))
         when (oddp length)
-          do (assert (< (aref vector parent) (aref vector right)) ()
+          do (assert (<= (aref vector parent) (aref vector right)) ()
                      "VERIFY-HEAP-PROPERTY: Invalid right child: ~D -> ~D"
                      (aref vector parent) (aref vector right))))
 
@@ -39,6 +40,10 @@
       (perform-test queue (nreverse (a:iota length)))
       (dotimes (i 100)
         (perform-test queue (a:shuffle (a:iota length))))))
+  (let ((queue (q:make-queue 64)))
+    (perform-test queue (alexandria:shuffle (append (a:iota 64)
+                                                    (a:iota 32)
+                                                    (a:iota 16)))))
   (perform-error-test)
   (perform-copy-test))
 
@@ -122,7 +127,7 @@
 
 (defun test-dequeue-and-peek (queue list)
   (let ((counter (q:size queue)))
-    (dotimes (i (length list))
+    (dolist (i (sort list '<))
       (test-peek queue (stringify i) t)
       (assert (= counter (q:size queue)))
       (test-dequeue queue (stringify i) t)
