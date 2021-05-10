@@ -31,7 +31,7 @@
         #'test-damn-fast-stable-priority-queue))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; Performance testq
+;;;; Performance test
 
 (defun perform-test (name vector-name vector
                      &key make-fn push-fn peek-fn pop-fn)
