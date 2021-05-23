@@ -209,7 +209,8 @@
           (let ((old-data (aref data-vector (%size queue)))
                 (old-prio (aref prio-vector (%size queue))))
             (setf (aref data-vector 0) old-data
-                  (aref prio-vector 0) old-prio))
+                  (aref prio-vector 0) old-prio
+                  (car (aref data-vector 0)) 0))
           (heapify-downwards data-vector prio-vector (%size queue) 0)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
