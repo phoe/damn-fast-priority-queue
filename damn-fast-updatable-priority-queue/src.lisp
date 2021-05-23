@@ -286,9 +286,7 @@
                 handle-data))
 (defun handle-data (queue handle)
   (let ((index (valid-handle queue handle)))
-    (if index
-        (values (cdr handle) t)
-        (values nil nil))))
+    (values (cdr handle) (if index t nil))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Modification
