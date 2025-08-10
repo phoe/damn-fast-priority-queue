@@ -82,6 +82,27 @@
          :prio-vector (copy-seq (%prio-vector queue))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; A version of adjust-array that returns simple-arrays
+;;;; with all Common Lisp implementations
+
+(declaim (inline adjust-array*))
+
+(defun adjust-array* (array new-length)
+  ;; Implementations that return a simple-array
+  #+(or abcl clisp sbcl)
+  (adjust-array array new-length)
+  ;; Implementations that may return a non-simple array.
+  ;; Note: this code assumes a simple-vector as input.
+  #-(or abcl clisp sbcl)
+  (let* ((length (array-total-size array))
+         (new-array (make-array new-length
+                                :element-type (array-element-type array))))
+    (dotimes (i (min length new-length))
+      (setf (row-major-aref new-array i)
+            (row-major-aref array i)))
+    new-array))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Enqueueing
 
 (declaim (inline heapify-upwards enqueue))
@@ -125,8 +146,8 @@
           (when (<= new-length length)
             (error "Integer overflow while resizing array: new-length ~D is ~
                     smaller than old length ~D" new-length length))
-          (setf data-vector (adjust-array data-vector new-length)
-                prio-vector (adjust-array prio-vector new-length))))
+          (setf data-vector (adjust-array* data-vector new-length)
+                prio-vector (adjust-array* prio-vector new-length))))
       (setf (aref data-vector size) object
             (aref prio-vector size) priority)
       (heapify-upwards data-vector prio-vector (%size queue))
@@ -220,8 +241,8 @@
   (declare (type queue queue))
   (declare #.*optimize-qualities*)
   (let ((size (%size queue)))
-    (setf (%data-vector queue) (adjust-array (%data-vector queue) size)
-          (%prio-vector queue) (adjust-array (%prio-vector queue) size))
+    (setf (%data-vector queue) (adjust-array* (%data-vector queue) size)
+          (%prio-vector queue) (adjust-array* (%prio-vector queue) size))
     nil))
 
 (declaim (ftype (function (queue (function (t) t)) (values null &optional))
