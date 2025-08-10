@@ -253,5 +253,5 @@
   ((%queue :reader queue-size-limit-reached-queue :initarg :queue)
    (%object :reader queue-size-limit-reached-object :initarg :element))
   (:default-initargs :queue (a:required-argument :queue)
-                     :object (a:required-argument :object))
+                     :element (a:required-argument :element))
   (:report report-queue-size-limit-reached))
