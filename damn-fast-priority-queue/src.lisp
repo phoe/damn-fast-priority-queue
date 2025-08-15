@@ -86,13 +86,24 @@
 ;;;; with all Common Lisp implementations. Implemented as a macro
 ;;;; to avoid introducing runtime overhead.
 
+;;;; There are two branches:
+;;;;  - adjust-array: works with SBCL and ABCL, fails with
+;;;;    ECL and Clasp because the returned array is not simple
+;;;;  - make-array plus loop for copying: works with all compilers
+
+;;;; Performance notes:
+;;;;  - With ABCL, adjust-array is slightly faster than making a new array
+;;;;  - With SBCL, both versions have equal performance.
+;;;;  - Using cl:replace instead of an explicit loop does not improve
+;;;;    performance on any tested implementation.
+
 (defmacro adjust-array* (array new-length)
-  ;; Implementations that return a simple-array
-  #+(or abcl clisp sbcl)
+  ;; Implementations that return a simple-array.
+  #+(or abcl sbcl)
   `(adjust-array ,array ,new-length)
   ;; Implementations that may return a non-simple array.
   ;; Note: this code assumes a simple-vector as input.
-  #-(or abcl clisp sbcl)
+  #-(or abcl sbcl)
   (a:with-gensyms (array* new-length* length* new-array* i*)
     `(let* ((,array* ,array)
             (,new-length* ,new-length)

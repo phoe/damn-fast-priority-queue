@@ -103,11 +103,11 @@
 
 (defmacro adjust-array* (array new-length)
   ;; Implementations that return a simple-array
-  #+(or abcl clisp sbcl)
+  #+(or abcl sbcl)
   `(adjust-array ,array ,new-length)
   ;; Implementations that may return a non-simple array.
   ;; Note: this code assumes a simple-vector as input.
-  #-(or abcl clisp sbcl)
+  #-(or abcl sbcl)
   (a:with-gensyms (array* new-length* length* new-array* i*)
     `(let* ((,array* ,array)
             (,new-length* ,new-length)
